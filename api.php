@@ -6,7 +6,7 @@ header('Access-Control-Allow-Methods: GET');
 header('Access-Control-Allow-Headers: Content-Type');
 
 // YouTube API Configuration - AMAN DI SERVER SIDE
-define('YOUTUBE_API_KEY', 'AIzaSyD07C6L1mnwhAs7_CvmM2Un_jricGLrwzQ');
+define('YOUTUBE_API_KEY', 'AIzxxxxxxxxxxxxxxxxxxwzQ');
 define('YOUTUBE_API_BASE', 'https://www.googleapis.com/youtube/v3');
 
 // Get request parameters
