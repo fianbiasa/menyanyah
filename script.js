@@ -4,8 +4,8 @@
 const CHANNEL_USERNAME = 'menyanyahpodcast';
 const MAX_RESULTS = 12; // Number of videos to fetch per page
 
-// API endpoints
-const API_BASE = 'https://www.googleapis.com/youtube/v3';
+// API endpoints - menggunakan PHP proxy untuk keamanan
+const API_BASE = 'api.php';
 
 // State management
 let nextPageToken = null;
@@ -45,7 +45,7 @@ function formatDate(dateString) {
 // Get channel ID from username
 async function getChannelId() {
     try {
-        const url = `${API_BASE}/channels?part=id,statistics&forUsername=${CHANNEL_USERNAME}&key=${YOUTUBE_API_KEY}`;
+        const url = `${API_BASE}?endpoint=channels&part=id,statistics&forUsername=${CHANNEL_USERNAME}`;
         const response = await fetch(url);
         const data = await response.json();
         
@@ -57,7 +57,7 @@ async function getChannelId() {
         }
         
         // If username doesn't work, try with handle (newer YouTube format)
-        const handleUrl = `${API_BASE}/search?part=snippet&type=channel&q=@${CHANNEL_USERNAME}&key=${YOUTUBE_API_KEY}`;
+        const handleUrl = `${API_BASE}?endpoint=search&part=snippet&type=channel&q=@${CHANNEL_USERNAME}`;
         const handleResponse = await fetch(handleUrl);
         const handleData = await handleResponse.json();
         
@@ -65,7 +65,7 @@ async function getChannelId() {
             const channelId = handleData.items[0].snippet.channelId;
             
             // Get statistics for this channel
-            const statsUrl = `${API_BASE}/channels?part=statistics&id=${channelId}&key=${YOUTUBE_API_KEY}`;
+            const statsUrl = `${API_BASE}?endpoint=channels&part=statistics&id=${channelId}`;
             const statsResponse = await fetch(statsUrl);
             const statsData = await statsResponse.json();
             
@@ -85,7 +85,7 @@ async function getChannelId() {
 // Fetch videos from YouTube
 async function fetchVideos(channelId, pageToken = null) {
     try {
-        let url = `${API_BASE}/search?part=snippet&channelId=${channelId}&maxResults=${MAX_RESULTS}&order=date&type=video&key=${YOUTUBE_API_KEY}`;
+        let url = `${API_BASE}?endpoint=search&part=snippet&channelId=${channelId}&maxResults=${MAX_RESULTS}&order=date&type=video`;
         
         if (pageToken) {
             url += `&pageToken=${pageToken}`;
@@ -102,7 +102,7 @@ async function fetchVideos(channelId, pageToken = null) {
         const videoIds = data.items.map(item => item.id.videoId).join(',');
         
         // Fetch video details (duration, views, etc.)
-        const detailsUrl = `${API_BASE}/videos?part=contentDetails,statistics&id=${videoIds}&key=${YOUTUBE_API_KEY}`;
+        const detailsUrl = `${API_BASE}?endpoint=videos&part=contentDetails,statistics&id=${videoIds}`;
         const detailsResponse = await fetch(detailsUrl);
         const detailsData = await detailsResponse.json();
         
@@ -257,13 +257,7 @@ async function loadMoreEpisodes() {
 // Initialize the page
 async function init() {
     try {
-        // Check if API key is configured
-        if (typeof YOUTUBE_API_KEY === 'undefined' || !YOUTUBE_API_KEY || YOUTUBE_API_KEY === 'YOUR_YOUTUBE_API_KEY_HERE') {
-            showError('YouTube API Key belum dikonfigurasi. Silakan lihat README.md untuk panduan setup.');
-            return;
-        }
-        
-        // Get channel data
+        // Get channel data (API key handled by backend)
         const channelData = await getChannelId();
         
         // Update statistics

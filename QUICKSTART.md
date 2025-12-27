@@ -15,24 +15,34 @@
 
 ### 2️⃣ Konfigurasi Website
 
-1. Buka file `config.js`
-2. Ganti baris ini:
-```javascript
-const YOUTUBE_API_KEY = 'YOUR_YOUTUBE_API_KEY_HERE';
-```
-
-Menjadi (paste API Key kamu):
-```javascript
-const YOUTUBE_API_KEY = 'AIzaSyD..........'; // API Key kamu
+1. Buka file `api.php`
+2. Di **baris 8**, ganti dengan API Key kamu:
+```php
+const YOUTUBE_API_KEY = 'AIzaSyD...'; // Paste API Key kamu di sini
 ```
 
 3. Save file
 
-### 3️⃣ Test Website
+**Keuntungan**: API Key tersimpan di backend PHP, **tidak bisa dilihat** oleh pengunjung!
+
+### 3️⃣ Persyaratan Server
+
+Pastikan server Anda memiliki:
+- ✅ **PHP 7.4+** installed
+- ✅ **curl extension** aktif
+- ✅ **Web server** (Apache/Nginx) yang support PHP
+
+Cek PHP:
+```bash
+php -v
+php -m | grep curl
+```
+
+### 4️⃣ Test Website
 
 Buka browser dan akses:
 ```
-http://localhost:8080
+http://localhost/menyanyah.xyz
 ```
 
 atau jika sudah di server:
@@ -50,8 +60,11 @@ Website berhasil jika:
 
 ## ❌ Troubleshooting
 
-### "YouTube API Key belum dikonfigurasi"
-→ Edit `config.js` dengan API Key yang benar
+### "Internal Server Error" / Error 500
+→ **Cek PHP installed**: `php -v`
+→ **Cek curl extension**: `php -m | grep curl`
+→ **Cek error log**: `/var/log/apache2/error.log`
+→ **Edit API Key** di `api.php` (bukan `config.js`)
 
 ### "Channel tidak ditemukan"
 → Cek nama channel di `script.js` (baris 4):
@@ -61,11 +74,16 @@ const CHANNEL_USERNAME = 'menyanyahpodcast';
 
 ### Episodes tidak muncul / Error 403
 → Pastikan YouTube Data API v3 sudah **Enabled** di Google Cloud Console
+→ Cek API Key di `api.php` sudah benar
 
 ### Error 429 (Quota exceeded)
 → API quota habis untuk hari ini. YouTube API gratis punya limit:
 - 10,000 units/day
 - Reset setiap midnight Pacific Time
+
+### API Key masih terlihat?
+→ **TIDAK!** Jika Anda menggunakan `api.php`, API Key tersimpan di server
+→ Cek dengan View Source - tidak akan ada API Key di HTML/JavaScript
 
 ## 🔒 Tips Keamanan (Production)
 
@@ -84,23 +102,26 @@ Di Google Cloud Console → Credentials → Edit API Key:
 
 ```
 /var/www/html/menyanyah.xyz/
-├── index.html          # Main HTML
+├── index.php           # Main file (PHP)
+├── api.php             # Backend proxy (simpan API Key di sini!) 🔒
 ├── style.css           # All styling
-├── script.js           # YouTube API integration
-├── config.js           # API Key (jangan commit!)
-├── config.example.js   # Template untuk config.js
+├── script.js           # Frontend JavaScript
+├── config.example.js   # Example config (deprecated)
 ├── README.md           # Full documentation
 ├── QUICKSTART.md       # This file
-└── .gitignore         # Git ignore untuk config.js
+└── TROUBLESHOOTING.md  # Advanced troubleshooting
 ```
+
+**⚠️ Penting**: File `config.js` sudah **tidak digunakan lagi**. API Key sekarang di `api.php` (backend).
 
 ## 🎯 Next Steps
 
-1. **Custom Domain**: Point domain menyanyah.xyz ke server
+1. **Amankan API Key**: Batasi di Google Cloud Console (HTTP referrers)
 2. **SSL Certificate**: Setup HTTPS dengan Let's Encrypt
-3. **Analytics**: Add Google Analytics untuk tracking visitors
-4. **SEO**: Optimize meta tags untuk search engines
-5. **PWA**: Make it installable (Progressive Web App)
+3. **Backup `api.php`**: Simpan file ini dengan aman (berisi API Key)
+4. **Analytics**: Add Google Analytics untuk tracking visitors
+5. **SEO**: Optimize meta tags untuk search engines
+6. **Monitoring**: Setup uptime monitoring untuk website
 
 ## 🆘 Need Help?
 

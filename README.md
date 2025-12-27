@@ -10,6 +10,7 @@ Website podcast dengan auto-update dari YouTube channel [@menyanyahpodcast](http
 - ⚡ **Fast Loading**: Optimized dengan lazy loading
 - 📊 **Channel Stats**: Subscribers, views, dan video count real-time
 - 🎬 **Video Modal**: Play video langsung di website
+- 🔒 **Secure API Key**: API key tersembunyi di backend PHP (tidak terekspos ke pengunjung)
 
 ## 📋 Setup Instructions
 
@@ -28,36 +29,45 @@ Website podcast dengan auto-update dari YouTube channel [@menyanyahpodcast](http
 
 ### 2. Konfigurasi API Key
 
-1. Buka file `config.js`
-2. Ganti `YOUR_YOUTUBE_API_KEY_HERE` dengan API Key kamu:
-```javascript
+1. Buka file `api.php`
+2. Di baris 8, ganti dengan API Key kamu:
+```php
 const YOUTUBE_API_KEY = 'AIzaSy...'; // API Key kamu
 ```
 
-### 3. (Opsional) Amankan API Key
+### 3. Persyaratan Server
 
-Untuk production, batasi API Key di Google Cloud Console:
+Website ini membutuhkan:
+- ✅ **PHP 7.4+** (dengan curl extension)
+- ✅ **Web server** (Apache/Nginx) yang support PHP
+
+### 4. (Opsional) Amankan API Key Lebih Lanjut
+
+Untuk keamanan ekstra, batasi API Key di Google Cloud Console:
 - **HTTP referrers**: `menyanyah.xyz/*`
 - **API restrictions**: Pilih "YouTube Data API v3" only
 
-### 4. Deploy Website
+### 5. Deploy Website
 
 Upload semua file ke web hosting kamu:
 ```
 /var/www/html/menyanyah.xyz/
-├── index.html
-├── style.css
-├── script.js
-├── config.js
-└── README.md
+├── index.php          # Main file (PHP)
+├── api.php            # Backend API proxy (menyimpan API key)
+├── style.css          # Styling
+├── script.js          # Frontend JavaScript
+└── README.md          # Documentation
 ```
+
+**Catatan**: File `config.js` sudah tidak digunakan lagi untuk keamanan.
 
 ## 🎯 Cara Kerja
 
-1. Website akan otomatis fetch video dari YouTube API setiap kali halaman dibuka
-2. Data ditampilkan dengan thumbnail, title, views, duration, dll
-3. Click pada episode untuk play video
-4. Tidak perlu manual update - otomatis sync dengan YouTube channel!
+1. **Frontend** (`index.php` + `script.js`) request data ke `api.php`
+2. **Backend** (`api.php`) menyimpan API key dan forward request ke YouTube API
+3. Data dari YouTube diteruskan ke frontend untuk ditampilkan
+4. **API Key tersembunyi** di server, pengunjung tidak bisa melihatnya
+5. Tidak perlu manual update - otomatis sync dengan YouTube channel!
 
 ## 🔧 Kustomisasi
 
@@ -80,17 +90,24 @@ const CHANNEL_USERNAME = 'menyanyahpodcast'; // Ganti dengan channel lain
 
 ## ⚠️ Troubleshooting
 
-### Error: "YouTube API Key belum dikonfigurasi"
-- Pastikan sudah edit `config.js` dengan API Key yang valid
+### Videos tidak muncul / Error 500
+- Pastikan **PHP sudah terinstall** di server
+- Pastikan **curl extension** aktif: `php -m | grep curl`
+- Cek API Key di file `api.php` sudah benar
+- Cek error log PHP: `/var/log/apache2/error.log` atau `/var/log/nginx/error.log`
 
 ### Error: "Channel tidak ditemukan"
 - Cek nama channel di `CHANNEL_USERNAME` sudah benar
 - Pastikan channel public/visible
 
-### Videos tidak muncul
+### Videos tidak muncul / Error 403
 - Cek quota API di Google Cloud Console
 - Pastikan YouTube Data API v3 sudah enabled
 - Cek console browser untuk error details (F12)
+
+### API Key terekspos?
+- **Aman!** API Key tersimpan di `api.php` yang diproses di server
+- Pengunjung hanya bisa akses melalui proxy, tidak bisa lihat API Key asli
 
 ## 📊 API Quota
 
@@ -103,12 +120,12 @@ Website ini menggunakan ~200 units per page load. Cukup untuk ~50 visitors per h
 
 ## 🛠️ Tech Stack
 
-- HTML5
-- CSS3 (Custom styling)
-- Vanilla JavaScript
-- YouTube Data API v3
-- Font Awesome Icons
-- Google Fonts (Inter)
+- **Backend**: PHP 7.4+ (API Proxy)
+- **Frontend**: HTML5 + Vanilla JavaScript
+- **Styling**: CSS3 (Custom)
+- **API**: YouTube Data API v3
+- **Icons**: Font Awesome
+- **Fonts**: Google Fonts (Inter)
 
 ## 📄 License
 

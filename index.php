@@ -238,7 +238,6 @@
     </div>
 
     <!-- Scripts -->
-    <script src="config.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
